@@ -1,6 +1,5 @@
 <html>
   	<title>个人网站</title>
-	<script src="showdown.js"></script>
 	<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
 	<script type="text/javascript">
 	// var converter = new showdown.Converter();
@@ -10,7 +9,7 @@
 		             type: "get",
 		             async: true,
 		             url: "index.html",
-		             dataType: "text/html",
+		             dataType: "text",
 		             success: function(json){
 		                 alert('您查询到航班信息');
 		             },
@@ -38,6 +37,7 @@ var version=parseFloat(b_version)
 document.write("浏览器名称："+ browser)
 document.write("<br />")
 document.write("浏览器版本："+ version)
+document.write("<br />")
 document.write("<button>test</button>")
 </script>
 </body>
