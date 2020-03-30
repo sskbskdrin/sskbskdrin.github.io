@@ -3,47 +3,57 @@ apply plugin: 'com.jfrog.bintray'
 
 // load properties
 Properties properties = new Properties()
-File localPropertiesFile = project.rootProject.file("local.properties");
+File localPropertiesFile = project.rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
     properties.load(localPropertiesFile.newDataInputStream())
 }
-File projectPropertiesFile = project.file("project.properties");
+File projectPropertiesFile = project.file("project.properties")
 if (projectPropertiesFile.exists()) {
     properties.load(projectPropertiesFile.newDataInputStream())
 }
 
 // read properties
-String projectName = properties.getProperty("project.name")
-String projectGroupId = properties.getProperty("project.groupId")
-String projectArtifactId = properties.getProperty("project.artifactId")
-String projectVersion = properties.getProperty("project.version")
-String projectSiteUrl = properties.getProperty("project.url.site")
-String projectGitUrl = properties.getProperty("project.url.git")
-String projectScmConnectionUrl = properties.getProperty("project.scm.connection")
-String projectScmDeveloperUrl = properties.getProperty("project.scm.developer")
-String projectDescription = properties.getProperty("project.description")
+String proName = properties.getProperty("project.name")
+String proGroupId = properties.getProperty("project.groupId")
+String proArtifactId = properties.getProperty("project.artifactId")
+String proVersion = properties.getProperty("project.version")
+String proSiteUrl = properties.getProperty("project.url.site")
+String proGitUrl = properties.getProperty("project.url.git")
+String proScmConnectionUrl = properties.getProperty("project.scm.connection")
+String proScmDeveloperUrl = properties.getProperty("project.scm.developer")
+String proDescription = properties.getProperty("project.description")
+String proPkg = properties.getProperty("project.pkg")
+if (proPkg == null || proPkg.length() == 0) {
+    proPkg = "aar"
+}
 
-String developerName = properties.getProperty("developer.name")
-String developerEmail = properties.getProperty("developer.email")
+String devName = properties.getProperty("developer.name")
+String devEmail = properties.getProperty("developer.email")
+if (devName == null || devName.length() == 0) {
+    devName = "sskbskdrin"
+}
+if (devEmail == null || devEmail.length() == 0) {
+    devEmail = "keayuan_1991.com@163.com"
+}
 
 String bintrayUser = properties.getProperty("bintray.user")
 String bintrayApikey = properties.getProperty("bintray.apikey")
 String gpgPass = properties.getProperty("bintray.gpg.password")
 
-group = projectGroupId
+group = proGroupId
 
 // This generates POM.xml with proper parameters
 install {
     repositories.mavenInstaller {
         pom {
             project {
-                packaging 'aar'
-                groupId projectGroupId
-                artifactId projectArtifactId
-                version projectVersion
-                name projectName
-                description projectDescription
-                url projectSiteUrl
+                packaging proPkg
+                groupId proGroupId
+                artifactId proArtifactId
+                version proVersion
+                name proName
+                description proDescription
+                url proSiteUrl
                 licenses {
                     license {
                         name 'The Apache Software License, Version 2.0'
@@ -52,14 +62,14 @@ install {
                 }
                 developers {
                     developer {
-                        name developerName
-                        email developerEmail
+                        name devName
+                        email devEmail
                     }
                 }
                 scm {
-                    connection projectScmConnectionUrl
-                    developerConnection projectScmDeveloperUrl
-                    url projectSiteUrl
+                    connection proScmConnectionUrl
+                    developerConnection proScmDeveloperUrl
+                    url proSiteUrl
                 }
             }
         }
@@ -82,9 +92,20 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
+if (proPkg == 'jar') {
+    task makeJar(type: Jar) {
+        delete 'build/libs/'
+        from('build/intermediates/javac/release/classes')
+        exclude('BuildConfig.class', 'R.class')
+    }
+}
+
 artifacts {
     archives javadocJar
     archives sourcesJar
+    if (proPkg == 'jar') {
+        archives makeJar
+    }
 }
 
 // javadoc configuration
@@ -93,9 +114,9 @@ javadoc {
         encoding "UTF-8"
         charSet 'UTF-8'
         author true
-        version projectVersion
-        links "http://docs.oracle.com/javase/7/docs/api"
-        title projectName
+        version proVersion
+        links "http://docs.oracle.com/javase/8/docs/api"
+        title proName
     }
 }
 
@@ -105,15 +126,15 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "maven"
-        name = projectName
-        websiteUrl = projectSiteUrl
-        vcsUrl = projectGitUrl
+        name = proName
+        websiteUrl = proSiteUrl
+        vcsUrl = proGitUrl
         licenses = ["Apache-2.0"]
         publish = true
         publicDownloadNumbers = true
         version {
-            name = projectVersion
-            desc = projectDescription
+            name = proVersion
+            desc = proDescription
             vcsTag = 'master'
             gpg {
                 sign = true
